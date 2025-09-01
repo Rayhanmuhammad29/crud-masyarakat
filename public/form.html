@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Pendataan Masyarakat</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: #2c3e50;
+      color: #fff;
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar h2 {
+      text-align: center;
+      padding: 20px 0;
+      border-bottom: 1px solid #34495e;
+      margin: 0;
+    }
+    .sidebar a {
+      color: #fff;
+      padding: 15px 20px;
+      text-decoration: none;
+      display: block;
+    }
+    .sidebar a:hover {
+      background: #34495e;
+    }
+
+    /* Main content */
+    .main {
+      margin-left: 220px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: #2980b9;
+      color: #fff;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      padding: 20px;
+      background: #f4f6f9;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      max-width: 600px;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background: #27ae60;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #219150;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>📊 Dashboard</h2>
+    <a href="index.html">Daftar Data</a>
+    <a href="form.html">Tambah Data</a>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+    <!-- Navbar -->
+    <div class="navbar">
+      <div>📌 Pendataan Masyarakat Jorong Koto Baru</div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <h1 id="formTitle">Tambah Data Masyarakat</h1>
+      <form id="masyarakatForm">
+        <label>Nama Lengkap</label>
+        <input type="text" name="nama" required>
+
+        <label>NIK</label>
+        <input type="text" name="nik" required>
+
+        <label>Jenis Kelamin</label>
+        <select name="jenis_kelamin" required>
+          <option value="">-- Pilih --</option>
+          <option value="Laki-laki">Laki-laki</option>
+          <option value="Perempuan">Perempuan</option>
+        </select>
+
+        <label>Tanggal Lahir</label>
+        <input type="date" name="tanggal_lahir" required>
+
+        <label>Alamat</label>
+        <textarea name="alamat" required></textarea>
+
+        <label>Pekerjaan</label>
+        <input type="text" name="pekerjaan" required>
+
+        <label>No HP</label>
+        <input type="text" name="no_hp" required>
+
+        <label>Email</label>
+        <input type="email" name="email" required>
+
+        <button type="submit">Simpan</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('masyarakatForm');
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (id) {
+      document.getElementById("formTitle").textContent = "Edit Data Masyarakat";
+
+      // load data lama
+      fetch(`/api/masyarakat/${id}`)
+        .then(res => res.json())
+        .then(data => {
+          for (const key in data) {
+            if (form.elements[key]) {
+              form.elements[key].value = data[key];
+            }
+          }
+        });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = {};
+      for (const input of form.elements) {
+        if (input.name) {
+          formData[input.name] = input.value;
+        }
+      }
+
+      let res;
+      if (id) {
+        res = await fetch(`/api/masyarakat/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        });
+      } else {
+        res = await fetch(`/api/masyarakat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        });
+      }
+
+      if (res.ok) {
+        window.location.href = "index.html";
+      } else {
+        alert("Gagal menyimpan data!");
+      }
+    });
+  </script>
+</body>
+</html>

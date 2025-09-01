@@ -1,0 +1,21 @@
+button {
+  padding: 6px 12px;
+  margin: 2px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+button:nth-child(1) {
+  background: #ffc107; /* Edit */
+  color: #000;
+}
+
+button:nth-child(2) {
+  background: #dc3545; /* Hapus */
+  color: #fff;
+}
